@@ -9,6 +9,7 @@ on:
       - main
   workflow_dispatch:
 
+jobs:
   pre_release:
     runs-on: ubuntu-latest
     steps:
