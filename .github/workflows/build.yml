@@ -41,11 +41,11 @@ jobs:
       - name: Prepare files
         run: |
           pwd
-          unzip ./windows-artifacts/windows-artifacts.zip
-          rm ./windows-artifacts/windows-artifacts.zip
+          unzip windows-artifacts/windows-artifacts.zip
+          rm windows-artifacts/windows-artifacts.zip
 
-          unzip ./linux-artifacts/linux-artifacts.zip
-          rm ./linux-artifacts/linux-artifacts.zip
+          unzip linux-artifacts/linux-artifacts.zip
+          rm linux-artifacts/linux-artifacts.zip
 
       - name: Release version
         uses: marvinpinto/action-automatic-releases@v1.2.0
@@ -55,5 +55,5 @@ jobs:
           automatic_release_tag: 'pre_release'
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: |
-            ./windows-artifacts/*.exe
-            ./linux-artifacts/*.txt
+            windows-artifacts/*.exe
+            linux-artifacts/*.txt
