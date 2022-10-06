@@ -41,6 +41,7 @@ jobs:
       - name: Prepare files
         run: |
           pwd
+          ls -la
           unzip windows-artifacts/windows-artifacts.zip
           rm windows-artifacts/windows-artifacts.zip
 
