@@ -40,6 +40,7 @@ jobs:
 
       - name: Prepare files
         run: |
+          pwd
           unzip ./windows-artifacts/windows-artifacts.zip
           rm ./windows-artifacts/windows-artifacts.zip
 
