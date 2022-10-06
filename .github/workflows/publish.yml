@@ -1,0 +1,58 @@
+name: Publish/release
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+
+jobs:
+  sign_exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: GabrielAcostaEngler/signtool-code-sign@main
+        with:
+          certificate: '${{ secrets.CERTIFICATE }}'
+          cert-password: '${{ secrets.PASSWORD }}'
+          cert-sha1: '${{ secrets.CERTHASH }}'
+          cert-description: 'Storekeeper Windows POS'
+          folder: 'release/build/'
+          recursive: true
+          timestamp-server: 'http://timestamp.digicert.com' #might be given by the Certificate provider
+  start-store-submission:
+    needs: sign_exe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hkusu/s3-upload-action@v2
+        id: upload
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-1' #need correct value
+          aws-bucket: ${{ secrets.AWS_BUCKET }}
+          file-path: 'release/build/*.exe'
+          output-file-url: 'true'
+      - name: Show URL
+        run: echo '${{ steps.upload.outputs.file-url }}'
+
+      - name: Configure Store Credentials
+        uses: microsoft/store-submission@v1
+        with:
+          command: configure
+          type: win32
+          seller-id: ${{ secrets.SELLER_ID }}
+          product-id: ${{ secrets.PRODUCT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+
+      - name: Update Draft Submission
+        uses: microsoft/store-submission@v1
+        with:
+          command: update
+          product-update: '{"packages":[{"packageUrl":"${{ steps.upload.outputs.file-url }}","languages":["en", "nl"],"architectures":["X64", "x84"],"isSilentInstall":true}]}'
+
+      - name: Publish Submission
+        uses: microsoft/store-submission@v1
+        with:
+          command: publish

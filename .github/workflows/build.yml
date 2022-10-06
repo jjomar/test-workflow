@@ -1,0 +1,19 @@
+name: Build/release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+  pre_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release version
+        uses: marvinpinto/action-automatic-releases@v1.2.0
+        with:
+          prerelease: true
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
