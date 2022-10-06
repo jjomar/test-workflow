@@ -41,7 +41,8 @@ jobs:
       - name: Prepare files
         run: |
           pwd
-          ls -la
+          ls -la windows-artifacts
+          ls -la linux-artifacts
           unzip windows-artifacts/windows-artifacts.zip
           rm windows-artifacts/windows-artifacts.zip
 
