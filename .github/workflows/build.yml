@@ -10,12 +10,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  pre_release:
+  build_on_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-artifacts
+          path: ./*.exe
+
+  build_on_linux:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-artifacts
+          path: ./*.txt
+
+  pre_release:
+    needs: [build_on_windows, build_on_linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Prepare files
+        run: |
+          unzip windows-artifacts.zip –d ./windows-artifacts
+          rm windows-artifacts.zip
+
+          unzip linux-artifacts.zip –d ./linux-artifacts
+          rm linux-artifacts.zip
+
       - name: Release version
         uses: marvinpinto/action-automatic-releases@v1.2.0
         with:
           prerelease: true
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          title: "Main - Pre Release"
           automatic_release_tag: 'pre_release'
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          files: |
+            ./windows-artifacts/*.exe
+            ./linux-artifacts/*.txt

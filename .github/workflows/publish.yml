@@ -8,14 +8,27 @@ jobs:
   sign_exe:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build.yml
+          workflow_conclusion: success
+          name: windows-artifacts
+          commit: ${{github.sha}}
+
+      - name: Prepare directory
+        run: |
+          7z e windows-artifacts.zip -o ./windows-artifacts
+          rm windows-artifacts.zip
+
       - uses: GabrielAcostaEngler/signtool-code-sign@main
         with:
           certificate: '${{ secrets.CERTIFICATE }}'
           cert-password: '${{ secrets.PASSWORD }}'
           cert-sha1: '${{ secrets.CERTHASH }}'
           cert-description: 'Storekeeper Windows POS'
-          folder: 'release/build/'
+          folder: './windows-artifacts'
           recursive: true
           timestamp-server: 'http://timestamp.digicert.com' #might be given by the Certificate provider
   start-store-submission:
