@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Release version
         uses: marvinpinto/action-automatic-releases@v1.2.0
-        automatic_release_tag: 'pre_release',
+        automatic_release_tag: 'pre_release'
         with:
           prerelease: true
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
