@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          path: path/to/artifacts
+          path: ./
 
       - name: Prepare files
         run: |
