@@ -15,6 +15,7 @@ jobs:
     steps:
       - name: Release version
         uses: marvinpinto/action-automatic-releases@v1.2.0
+        if: ${{ startsWith( github.ref, 'refs/tags/' ) }}
         with:
           prerelease: true
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
